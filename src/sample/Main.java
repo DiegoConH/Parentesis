@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.util.Scanner;
 import java.util.Stack;
@@ -22,7 +23,7 @@ public class Main extends Application {
         Scanner input=new Scanner(System.in);
         String cadena=input.next();
 
-        matcher(cadena,0);
+        System.out.println(matcher(cadena,0));
 
     }
 
@@ -30,31 +31,36 @@ public class Main extends Application {
         launch(args);
     }
 
-    private int matcher(String cadena,int contador){
+    private boolean matcher(String cadena,int contador){
         if(String.valueOf(cadena.charAt(contador)).matches("[\\(|\\[|\\{]")){
             automataPila.push(String.valueOf(cadena.charAt(contador)));
         }else{
             if(String.valueOf(cadena.charAt(contador)).matches("[\\)|\\]|\\}]")){
-                if(!automataPila.empty()){
-                    if(contador==cadena.length()-1){
+                if(contador==cadena.length()-1){
+                    if(automataPila.size()>1){
                         System.out.println("cadena no balanceada, cierres faltantes.");
+                        return false;
                     }else{
                         automataPila.pop();
                     }
                 }else{
-                    System.out.println("Cadena no balanceada cierres de mas.");
-                    return 0;
+                    if(automataPila.empty()){
+                        System.out.println("cadena no balanceada, cierres de mas");
+                        return false;
+                    }else{
+                        automataPila.pop();
+                    }
                 }
             }else{
                 System.out.println("Cadena incorrecta, debe contener solamente parentesis, corchetes o llaves.");
-                return 0;
+                return false;
             }
         }
 
         contador+=1;
 
         if(contador==cadena.length()){
-            return 1;
+            return true;
         }else{
             return matcher(cadena,contador);
         }
